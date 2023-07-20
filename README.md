@@ -1,1 +1,2 @@
-
+### Fetch Data from Excel File to Json And Display Data in React JS | React XLSX
+How to upload excel file and fetch data from an Excel file in a React JS application. We will install the required dependencies such as xlsx library for parsing the Excel file. Get excel data in json format and display the data in form of a table. And applied a validation if the file is empty or the file is in excel format. 
