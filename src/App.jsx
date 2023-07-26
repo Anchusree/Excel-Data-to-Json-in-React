@@ -6,7 +6,9 @@ import * as XLSX from 'xlsx'
 function App() {
 
   const [data, setData] = useState([])
-  const [fileName,setFileName] = useState('')
+  const [fileName, setFileName] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [searchResults, setSearchResults] = useState([])
 
   const fileRef = useRef()
 
@@ -44,15 +46,32 @@ function App() {
 
   }
 
-  const handleRemoveFile = ()=>{
+  const handleRemoveFile = () => {
     setFileName(null)
-    fileRef.current.value =""
+    fileRef.current.value = ""
     setData([])
   }
 
+
+  const handleSearch = () => {
+    const results = []
+
+    data.filter(item => {
+      if (item["Name"].toLowerCase().startsWith(searchTerm.toLowerCase()) ||
+        item["Name"].toLowerCase().includes(searchTerm.toLowerCase())) {
+        results.push(item)
+
+      }
+    })
+    setSearchResults(results)
+
+  }
+
+
+
   return (
     <div>
-      <h1>Excel React</h1>
+      <h1>Excel in React</h1>
       <br />
 
       <div className="mb-3">
@@ -61,46 +80,88 @@ function App() {
         {
           fileName && (
             <>
-            <span>{fileName}</span>
-            <button className='removeFile' onClick={handleRemoveFile}>X</button>
+              <span>{fileName}</span>
+              <button className='removeFile' onClick={handleRemoveFile}>X</button>
             </>
           )
         }
       </div>
 
       <br />
+
+
       {
         data && data.length > 0 && (
           <div>
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                {
-                  Object.keys(data[0]).map((key)=>(
-                    <th scope="col" key={key}>{key}</th>
-                  ))
-                }
-              
-              </tr>
-            </thead>
-            <tbody>
-                {
-                  data.map((row,index)=>(
-                    <tr key={index}>
-                      {Object.values(row).map((value,index)=>(
-                        <td key={index}>{value}</td>
-                      ))}
+            <h3>Results</h3>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <input type='text' placeholder='Search name' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <button className='btn btn-primary' onClick={handleSearch}>Search</button>
+            </div>
+
+            <br />
+            {
+              searchResults && searchResults.length > 0
+                ?
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      {
+                        Object.keys(searchResults[0]).map((key) => (
+                          <th scope="col" key={key}>{key}</th>
+                        ))
+                      }
+
                     </tr>
-                  ))
-                }
-             
-           
-            </tbody>
-          </table>
-        </div>
+                  </thead>
+                  <tbody>
+                    {
+                      searchResults.map((row, index) => (
+                        <tr key={index}>
+                          {Object.values(row).map((value, index) => (
+                            <td key={index}>{value}</td>
+                          ))}
+                        </tr>
+                      ))
+                    }
+
+
+                  </tbody>
+                </table>
+                :
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      {
+                        Object.keys(data[0]).map((key) => (
+                          <th scope="col" key={key}>{key}</th>
+                        ))
+                      }
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      data.map((row, index) => (
+                        <tr key={index}>
+                          {Object.values(row).map((value, index) => (
+                            <td key={index}>{value}</td>
+                          ))}
+                        </tr>
+                      ))
+                    }
+
+
+                  </tbody>
+                </table>
+
+            }
+
+
+          </div>
         )
       }
-     
+
 
 
 
