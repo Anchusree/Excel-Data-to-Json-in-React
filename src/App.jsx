@@ -68,6 +68,40 @@ function App() {
   }
 
 
+  const handleDownload =()=>{
+
+    let keyvalues
+
+    if(data && data.length > 0){
+      keyvalues = data.map(item=>item)
+    }
+    if(searchResults && searchResults.length > 0){
+      keyvalues = searchResults.map(item=>item)
+    }
+    
+    const newdata = [...keyvalues]
+    
+    const worksheet = XLSX.utils.json_to_sheet(newdata)
+
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook,worksheet,"Sheet1")
+
+    const excelBuffer = XLSX.write(workbook,{ bookType: 'xlsx', type: 'array' })//generates excel
+    const excelBlob = new Blob([excelBuffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+
+    //download file
+    const downloadLink = URL.createObjectURL(excelBlob)
+    const link = document.createElement('a')
+    link.href= downloadLink
+    link.download  = "newdata.xlsx"
+    link.click()
+
+    setTimeout(() => {
+      URL.revokeObjectURL(downloadLink)
+    }, 100);
+  }
+
+
 
   return (
     <div>
@@ -98,6 +132,8 @@ function App() {
               <input type='text' placeholder='Search name' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               <button className='btn btn-primary' onClick={handleSearch}>Search</button>
             </div>
+            <br/>
+            <button className='btn btn-success' onClick={handleDownload}>Download</button>
 
             <br />
             {
